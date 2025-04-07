@@ -2,91 +2,108 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>興味シンシンチャット</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ランダム返答チャット</title>
     <style>
-        body { font-family: sans-serif; }
+        body {
+            font-family: sans-serif;
+            margin: 15px; /* 全体に少し余白を追加 */
+        }
         #chatbox {
-            height: 200px;
+            height: 300px; /* 高さを少し戻しました。お好みで調整してください */
+            /* width: 400px; */ /* 固定幅は削除 */
             border: 1px solid #ccc;
-            overflow-y: scroll; /* はみ出たらスクロール */
+            overflow-y: scroll;
             padding: 10px;
             margin-bottom: 10px;
+            box-sizing: border-box; /* paddingとborderをwidth/heightに含める */
         }
-        .message { margin-bottom: 5px; }
-        .user { text-align: right; color: blue; }
-        .bot { text-align: left; color: green; }
-        #userInput { width: 80%; padding: 5px; }
-        #sendButton { padding: 5px; }
+        .message {
+            margin-bottom: 8px; /* メッセージ間の余白を少し広げる */
+            word-wrap: break-word; /* 長い単語でも折り返す */
+        }
+        .user {
+            text-align: right;
+            color: blue;
+        }
+        .bot {
+            text-align: left;
+            color: green;
+        }
+        #userInput {
+            width: calc(100% - 75px); /* ボタンの幅を考慮して調整 */
+            padding: 8px; /* 少しパディングを増やす */
+            margin-right: 5px;
+            box-sizing: border-box;
+            vertical-align: middle; /* ボタンと高さを揃える */
+        }
+        #sendButton {
+            width: 60px; /* ボタンの幅を少し固定 */
+            padding: 8px 0; /* 上下のパディング調整 */
+            box-sizing: border-box;
+            vertical-align: middle; /* 入力欄と高さを揃える */
+        }
+        /* ▼▼▼ スマホ対応：画面幅が600px以下の場合のスタイル ▼▼▼ */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5em; /* 見出しを少し小さく */
+            }
+            #chatbox {
+                 height: 60vh; /* 画面の高さの60%にする (調整可能) */
+            }
+            #userInput {
+                width: 100%; /* 入力欄の幅を100%に */
+                margin-right: 0;
+                margin-bottom: 10px; /* ボタンとの間に余白 */
+                display: block; /* ブロック要素にして改行させる */
+            }
+            #sendButton {
+                width: 100%; /* ボタンの幅も100%に */
+                display: block; /* ブロック要素にして改行させる */
+            }
+        }
+        /* ▲▲▲ スマホ対応：画面幅が600px以下の場合のスタイル ▲▲▲ */
     </style>
 </head>
 <body>
 
-    <h1>興味シンシンチャット</h1>
+    <h1>ランダム返答チャット</h1>
     <div id="chatbox"></div>
-    <input type="text" id="userInput" placeholder="興味シンシンな一言をどうぞ！">
-    <button id="sendButton">おくっちゃお</button>
-
+    <div id="inputArea">
+        <input type="text" id="userInput" placeholder="メッセージを入力...">
+        <button id="sendButton">送信</button>
+    </div>
     <script>
         // --- 設定ここから ---
-
-        // ボットがランダムに返すメッセージのリスト
         const botReplies = [
-            "興味シンシン",
-            "5シンシンポイント進呈☝",
-            "マイナス100シンシンポイント",
-            "興味Nothing",
-            "おちょきんしねま",
-            
+            "なるほど！", "へぇ、そうなんだ。", "面白いね！", "うんうん。", "それでそれで？",
+            "わかる！", "すごいね！", "（考え中...）", "ま、いっか！", "それは秘密です。"
         ];
-
         // --- 設定ここまで ---
 
         const chatbox = document.getElementById('chatbox');
         const userInput = document.getElementById('userInput');
         const sendButton = document.getElementById('sendButton');
 
-        // 送信ボタンを押したときの処理
-        sendButton.onclick = function() {
-            sendMessage();
-        };
+        sendButton.onclick = sendMessage;
+        userInput.onkeypress = function(e) { if (e.key === 'Enter') sendMessage(); };
 
-        // Enterキーでも送信できるようにする
-        userInput.onkeypress = function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        };
-
-        // メッセージを送信する関数
         function sendMessage() {
-            const userText = userInput.value;
-            if (userText.trim() === '') return; // 空なら何もしない
-
-            // ユーザーのメッセージを表示
+            const userText = userInput.value.trim();
+            if (userText === '') return;
             addMessage(userText, 'user');
-
-            // 入力欄を空にする
             userInput.value = '';
-
-            // 少し待ってからボットの返信を表示 (待たないと連続して見えるため)
-            setTimeout(function() {
-                // ランダムな返信を選ぶ
+            setTimeout(() => {
                 const randomIndex = Math.floor(Math.random() * botReplies.length);
-                const botText = botReplies[randomIndex];
-
-                // ボットのメッセージを表示
-                addMessage(botText, 'bot');
-            }, 500); // 500ミリ秒 (0.5秒) 待つ
+                addMessage(botReplies[randomIndex], 'bot');
+            }, 500);
         }
 
-        // チャットボックスにメッセージを追加する関数
         function addMessage(text, sender) {
             const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message', sender); // CSSクラスを設定
+            messageDiv.classList.add('message', sender);
             messageDiv.textContent = text;
             chatbox.appendChild(messageDiv);
-
-            // 自動で一番下にスクロールする
             chatbox.scrollTop = chatbox.scrollHeight;
         }
     </script>
