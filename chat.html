@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>興味シンシンチャット</title>
+    <style>
+        body { font-family: sans-serif; }
+        #chatbox {
+            height: 200px;
+            border: 1px solid #ccc;
+            overflow-y: scroll; /* はみ出たらスクロール */
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .message { margin-bottom: 5px; }
+        .user { text-align: right; color: blue; }
+        .bot { text-align: left; color: green; }
+        #userInput { width: 80%; padding: 5px; }
+        #sendButton { padding: 5px; }
+    </style>
+</head>
+<body>
+
+    <h1>興味シンシンチャット</h1>
+    <div id="chatbox"></div>
+    <input type="text" id="userInput" placeholder="興味シンシンな一言をどうぞ！">
+    <button id="sendButton">おくっちゃお</button>
+
+    <script>
+        // --- 設定ここから ---
+
+        // ボットがランダムに返すメッセージのリスト
+        const botReplies = [
+            "興味シンシン",
+            "5シンシンポイント進呈☝",
+            "マイナス100シンシンポイント",
+            "興味Nothing",
+            "おちょきんしねま",
+            
+        ];
+
+        // --- 設定ここまで ---
+
+        const chatbox = document.getElementById('chatbox');
+        const userInput = document.getElementById('userInput');
+        const sendButton = document.getElementById('sendButton');
+
+        // 送信ボタンを押したときの処理
+        sendButton.onclick = function() {
+            sendMessage();
+        };
+
+        // Enterキーでも送信できるようにする
+        userInput.onkeypress = function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        };
+
+        // メッセージを送信する関数
+        function sendMessage() {
+            const userText = userInput.value;
+            if (userText.trim() === '') return; // 空なら何もしない
+
+            // ユーザーのメッセージを表示
+            addMessage(userText, 'user');
+
+            // 入力欄を空にする
+            userInput.value = '';
+
+            // 少し待ってからボットの返信を表示 (待たないと連続して見えるため)
+            setTimeout(function() {
+                // ランダムな返信を選ぶ
+                const randomIndex = Math.floor(Math.random() * botReplies.length);
+                const botText = botReplies[randomIndex];
+
+                // ボットのメッセージを表示
+                addMessage(botText, 'bot');
+            }, 500); // 500ミリ秒 (0.5秒) 待つ
+        }
+
+        // チャットボックスにメッセージを追加する関数
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender); // CSSクラスを設定
+            messageDiv.textContent = text;
+            chatbox.appendChild(messageDiv);
+
+            // 自動で一番下にスクロールする
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+    </script>
+
+</body>
+</html>
